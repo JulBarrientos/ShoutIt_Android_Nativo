@@ -5,9 +5,9 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
     <string name="action_settings">Settings</string>
-    <string name="logInGG_button">Log In With Google</string>
-    <string name="logInFB_button">Log In With Facebook</string>
-
+    <string name="signInGG_button">Sign In With Google</string>
+    <string name="signInFB_button">Sing In With Facebook</string>
+    <string name="createAccount">Create a new Account</string>
     <string name="web_clien_auth">534129476412-94u1rmgibs9c7m7rqsl44kore7idrmcg.apps.googleusercontent.com</string>
 
 

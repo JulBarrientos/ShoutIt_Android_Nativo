@@ -1,15 +1,13 @@
-package com.example.juliandbarrientos.shoutit
+package com.example.juliandbarrientos.shoutit.Activities
 
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.view.View
-import android.widget.Button
 import android.util.Log
-import android.widget.LinearLayout
-import android.widget.ProgressBar
-import android.widget.Toast
+import android.widget.*
+import com.example.juliandbarrientos.shoutit.R
 
 import com.facebook.*
 
@@ -21,7 +19,6 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.tasks.Task
 import com.facebook.login.LoginManager
 import com.facebook.login.LoginResult
-import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.auth.*
 
 import java.util.*
@@ -38,17 +35,20 @@ class LogInActivity : AppCompatActivity(), View.OnClickListener, GoogleApiClient
 
     private val TAG = "SignInActivity"
     private val RC_SIGN_IN = 9001
+    private  var mAuth              : FirebaseAuth?     = null
+    private  var callbackManager    : CallbackManager?  = null
+    private  var mGoogleApiClient   : GoogleApiClient?  = null
+    private  var LLBotonera         : LinearLayout?     = null
+    private  var progressBar        : ProgressBar?      = null
 
-    var mGoogleApiClient : GoogleApiClient? = null
-    private var mAuth: FirebaseAuth? = null
+    lateinit var facebook_singin    : Button
+    lateinit var google_signin      : Button
+    lateinit var email_signin       : Button
+    lateinit var log_in             : Button
+    lateinit var forg_pass          : Button
+    lateinit var input_email        : EditText
+    lateinit var input_pass         : EditText
 
-
-    var LLBotonera : LinearLayout? = null
-    var progressBar : ProgressBar? = null
-
-    lateinit var facebook_login: Button
-    lateinit var google_login : Button
-    private var callbackManager: CallbackManager? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -75,15 +75,24 @@ class LogInActivity : AppCompatActivity(), View.OnClickListener, GoogleApiClient
     }
 
     private fun setItems(){
-        this.LLBotonera = findViewById<LinearLayout>(R.id.botonera)
-        this.progressBar = findViewById<ProgressBar>(R.id.progress_bar)
-        this.facebook_login = findViewById<Button>(R.id.facebook_login)
-        this.google_login = findViewById<Button>(R.id.google_log_in)
+        this.facebook_singin = findViewById <Button>        (R.id.btnFacebookSignIn)
+        this.google_signin   = findViewById <Button>        (R.id.btnGoogleSignIn)
+        this.email_signin    = findViewById <Button>        (R.id.btnEmailSignIn)
+        this.progressBar     = findViewById <ProgressBar>   (R.id.progress_bar)
+        this.input_email     = findViewById <EditText>      (R.id.edtEmail)
+        this.LLBotonera      = findViewById <LinearLayout>  (R.id.botonera)
+        this.input_pass      = findViewById <EditText>      (R.id.edtPass)
+        this.forg_pass       = findViewById <Button>        (R.id.btnForgPass)
+        this.log_in          = findViewById <Button>        (R.id.btnLogIn)
     }
 
     private fun setHandleItem(){
-        this.facebook_login.setOnClickListener(this)
-        this.google_login.setOnClickListener(this)
+        this.facebook_singin    .setOnClickListener(this)
+        this.google_signin      .setOnClickListener(this)
+        this.email_signin       .setOnClickListener(this)
+        this.forg_pass          .setOnClickListener(this)
+        this.log_in             .setOnClickListener(this)
+
     }
 
 
@@ -121,21 +130,25 @@ class LogInActivity : AppCompatActivity(), View.OnClickListener, GoogleApiClient
                 //updateUI(null)
             }
 
-            // ...
+
         }
     }
 
     override fun onClick(v:View) {
-        LLBotonera!!.visibility = View.GONE
+      //  LLBotonera!!.visibility = View.GONE
         progressBar!!.visibility = View.VISIBLE
         when(v.id){
-            R.id.google_log_in ->
+        // --------------------   Google sing in button clicked case -------------------------------------------------------- //
+            this.google_signin.id    ->
                 startActivityForResult(Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient), RC_SIGN_IN)
-            R.id.facebook_login ->
+
+        // ---------------------  Facebook sing in button clicked case ------------------------------------------------------//
+            this.facebook_singin.id  ->
                 LoginManager.getInstance().logInWithReadPermissions(this@LogInActivity,  Arrays.asList("public_profile"))
-            else -> { // Note the block
+
+        // ---------------------- Default case --------------------------------------------------------------------------//
+            else                     ->
                 print("x is neither 1 nor 2")
-            }
         }
 
     }
@@ -146,12 +159,14 @@ class LogInActivity : AppCompatActivity(), View.OnClickListener, GoogleApiClient
         callbackManager!!.onActivityResult(requestCode, resultCode, data)
         // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
         if (requestCode === RC_SIGN_IN) {
+
             val result = Auth.GoogleSignInApi.getSignInResultFromIntent(data)
             if (result.isSuccess) {
                 // Google Sign In was successful, authenticate with Firebase
                 val account: GoogleSignInAccount? = result.signInAccount
                 firebaseAuthWithGoogle(account!!)
             } else {
+                progressBar!!.visibility = View.INVISIBLE
                 // Google Sign In failed, update UI appropriately
                 // ...
             }

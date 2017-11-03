@@ -3,51 +3,85 @@
     android:orientation="vertical" android:layout_width="match_parent"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_height="match_parent"
-    tools:context="com.example.juliandbarrientos.shoutit.MainActivity">
+    tools:context="com.example.juliandbarrientos.shoutit.Activities.MainActivity">
     <LinearLayout
+        android:id="@+id/logInForm"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:layout_margin="25dp"
+        android:layout_margin="15dp"
         android:orientation="vertical">
         <EditText
+            android:id="@+id/edtEmail"
+            android:inputType="textEmailAddress"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="15dp"
-            android:visibility="gone"/>
+            android:hint="Email"
+            android:textSize="15sp"
+
+            android:layout_marginBottom="15dp" />
         <EditText
+            android:id="@+id/edtPass"
+            android:layout_width="match_parent"
+            android:textSize="15sp"
+            android:layout_height="wrap_content"
+            android:hint="Password"
+            android:inputType="textPassword"
+            android:layout_marginBottom="15dp" />
+        <Button
+            android:id="@+id/btnLogIn"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="15dp"
-            android:visibility="gone"/>
-        <LinearLayout
-            android:id="@+id/botonera"
+            android:text="Log In"
+            android:textAllCaps="false"/>
+        <Button
+            android:id="@+id/btnForgPass"
             android:layout_width="match_parent"
-            android:orientation="vertical"
             android:layout_height="wrap_content"
-            >
-            <Button
-                android:id="@+id/google_log_in"
-                android:layout_width="match_parent"
-                android:layout_height="60dp"
-                android:theme="@style/AppTheme.Button.LogIn.Google"
-                />
-            <Button
-                android:id="@+id/facebook_login"
-                android:layout_width="match_parent"
-                android:layout_height="60dp"
-                android:theme="@style/AppTheme.Button.LogIn.Facebook"
-                />
-
-        </LinearLayout>
-
+            android:text="I Forgot My Password"
+            android:textSize="12sp"
+            style="@style/Base.Widget.AppCompat.Button.Borderless"
+            />
         <ProgressBar
             android:id="@+id/progress_bar"
             style="@style/Base.Widget.AppCompat.ProgressBar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:indeterminate="true"
-            android:visibility="gone" />
+            android:visibility="gone"
+            />
+    </LinearLayout>
+    <LinearLayout
+        android:id="@+id/botonera"
+        android:layout_width="match_parent"
+        android:orientation="vertical"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_margin="5dp"
+        >
+        <TextView
+            android:id="@+id/txtHaveAcc"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="Don't have an account?"/>
+        <Button
+            android:id="@+id/btnEmailSignIn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:theme="@style/AppTheme.Button.SignIn.Email"
+            />
+        <Button
+            android:id="@+id/btnGoogleSignIn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:theme="@style/AppTheme.Button.SignIn.Google"
+            />
+        <Button
+            android:id="@+id/btnFacebookSignIn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:theme="@style/AppTheme.Button.SignIn.Facebook"
+            />
+
     </LinearLayout>
 
 </RelativeLayout>
