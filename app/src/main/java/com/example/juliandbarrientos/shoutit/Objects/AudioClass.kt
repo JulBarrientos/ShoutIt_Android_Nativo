@@ -7,13 +7,11 @@ import java.util.*
  * Created by julian.d.barrientos on 10/2/2017.
  */
 
-class AudioClass (name: String ="",  usu: String ="",  timeRecorded: Date? =null){
-    var _name : String =""
+class AudioClass (name: String ="",  usu: String ="", timeRecorded : String =""){
+    var _name : String = name
 
-    var _usu : String = ""
+    var _usu : String = usu
 
-    var _timeRecorded : String = ""
-
-    private var timeRedordedDate :Date? =  null
+    var _timeRecorded : String = timeRecorded
 
 }
