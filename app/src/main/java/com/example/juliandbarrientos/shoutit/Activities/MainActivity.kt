@@ -2,15 +2,11 @@ package com.example.juliandbarrientos.shoutit.Activities
 
 import android.annotation.SuppressLint
 import android.content.Intent
-import android.media.MediaPlayer
-import android.media.MediaRecorder
-import android.net.Uri
 import android.os.Bundle
-import android.os.Environment
-import android.os.Handler
 import android.support.design.widget.NavigationView
 import android.support.v4.view.GravityCompat
 import android.support.v7.app.ActionBarDrawerToggle
+import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.view.Menu
@@ -29,46 +25,46 @@ import kotlinx.android.synthetic.main.app_bar_main.*
 
 
 import android.support.v7.widget.RecyclerView
-import android.util.Log
+import android.view.LayoutInflater
 import android.view.View
 import android.widget.ProgressBar
+import android.widget.TextView
 import com.example.juliandbarrientos.shoutit.Objects.UsuarioClass
+import com.example.juliandbarrientos.shoutit.Utils.ManejoAudio
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
-import com.nostra13.universalimageloader.core.DisplayImageOptions
 import com.nostra13.universalimageloader.core.ImageLoader
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration
-import java.io.File
-import java.io.IOException
-import java.text.SimpleDateFormat
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
+import org.firezenk.audiowaves.Visualizer
 import java.util.*
 
 
-class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener, MediaPlayer.OnCompletionListener, View.OnClickListener {
+class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener, View.OnClickListener {
+
+
+    private val TAG : String = "MainActivity"
 
 
     private var database    : FirebaseDatabase   = FirebaseDatabase.getInstance()
     private var audiDBRef   : DatabaseReference  = database.getReference("Audios")
     private var usuDBRef    : DatabaseReference  = database.getReference("userProfile")
     private var mStorageRef : StorageReference   = FirebaseStorage.getInstance().reference
-    private val TAG                  : String                     = "MainActivity"
+
     private val audiosListMut        : MutableList<AudioClass>    = mutableListOf()
     private val readOnlyListAudios   : List<AudioClass>           = audiosListMut
     private val usuarioHashMap       : HashMap<String,UsuarioClass> = HashMap()
 
+    private lateinit var manejoAudio    : ManejoAudio
     private lateinit var mRecyclerView  : RecyclerView
-    private lateinit var mAdapter       : RecyclerView.Adapter<*>
+    private lateinit var mAdapter       : AudioAdapter
     private lateinit var mLayoutManager : RecyclerView.LayoutManager
     private lateinit var user           : FirebaseUser
     private lateinit var toggle         : ActionBarDrawerToggle
-    private lateinit var recorder       : MediaRecorder
-    private lateinit var player         : MediaPlayer
-    private lateinit var file           : File
     private lateinit var progressBar    : ProgressBar
     private lateinit var imageLoader    : ImageLoader
-    // private  var listAudios : List<Audio> = ArrayList()
+    private lateinit var noShout        : TextView
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -78,6 +74,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private  fun setItem(){
+
+
+
         this.imageLoader = ImageLoader.getInstance() // Get singleton instance
         this.imageLoader.init(ImageLoaderConfiguration.createDefault(baseContext))
 
@@ -97,11 +96,15 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         this.progressBar = findViewById(R.id.progress_bar)
 
 
+        this.manejoAudio = ManejoAudio(this.user,this.mStorageRef,this.audiDBRef)
+        this.manejoAudio.init(this@MainActivity)
 
+        this.noShout = findViewById(R.id.noShout)
     }
 
     private  fun setHandleItem(){
         nav_view.setNavigationItemSelectedListener(this)
+
 
         usuDBRef.addChildEventListener( object : ChildEventListener{
 
@@ -118,6 +121,21 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             override fun onChildRemoved(p0: DataSnapshot?) {}
         })
 
+        audiDBRef.addValueEventListener(object  : ValueEventListener{
+            override fun onCancelled(p0: DatabaseError?) {
+            }
+
+            override fun onDataChange(p0: DataSnapshot?) {
+                progressBar.visibility = View.INVISIBLE
+                mRecyclerView.visibility = View.VISIBLE
+
+                if(p0!!.childrenCount.compareTo(0) == 0)
+                    noShout.visibility = View.VISIBLE
+                else
+                    noShout.visibility = View.GONE
+            }
+
+        })
         audiDBRef.addChildEventListener( object : ChildEventListener{
 
             override fun onCancelled(p0: DatabaseError?) {}
@@ -127,15 +145,13 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             override fun onChildChanged(p0: DataSnapshot?, p1: String?) {}
 
             override fun onChildAdded(p0: DataSnapshot?, p1: String?) {
-                progressBar.visibility = View.INVISIBLE
-                mRecyclerView.visibility = View.VISIBLE
-
                 val audio : AudioClass? = p0?.getValue(AudioClass::class.java)
                 audiosListMut.add(audio!!)
                 mAdapter.notifyDataSetChanged()
             }
             override fun onChildRemoved(p0: DataSnapshot?) {}
         })
+
 
         fab.setOnClickListener(this)
 
@@ -207,70 +223,14 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         return true
     }
 
-    override fun onCompletion(mp: MediaPlayer?) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
 
     override fun onClick(v: View?) {
         when(v!!.id) {
             fab.id ->{
-                startRecording()
+
+                manejoAudio.startRecording()
+               // showDialog(manejoAudio.titleDialog,manejoAudio.messageDialog)
             }
         }
-    }
-
-
-
-    @SuppressLint("SimpleDateFormat")
-    private fun startRecording(){
-        recorder = MediaRecorder()
-        recorder.setAudioSource(MediaRecorder.AudioSource.MIC)
-        recorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP)
-        recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB)
-        val path = File (Environment.getExternalStorageDirectory().path)
-        val dateNow = SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format( Date())
-        val fileName = "audio" + dateNow.replace(":",".")+".3gp"
-        try {
-            file = File.createTempFile (fileName, ".3gp", path)
-        } catch (e: IOException) {
-            Log.d(TAG,e.message)
-        }
-
-        recorder.setOutputFile(file.absolutePath)
-        try {
-            recorder.prepare ()
-        } catch (e: IOException) {
-            Log.d(TAG,e.message)
-        }
-        recorder.start()
-        Handler().postDelayed({
-            stopRecording(fileName,dateNow)
-        },4500)
-    }
-
-    private fun stopRecording(fileName: String,dateNow: String){
-        recorder.stop ()
-        recorder.release ()
-        mStorageRef.child("Audios/"+fileName).putFile(Uri.fromFile(file))
-        var audi =  AudioClass(fileName,user.uid,dateNow)
-        audiDBRef.push().setValue(audi)
-    }
-    private fun playAudio(path: String){
-        player = MediaPlayer ()
-        player.setOnCompletionListener (this)
-        try {
-            player.setDataSource(path)
-        } catch (e: IOException) {
-        }
-
-        try {
-            player.prepare ()
-        } catch (e: IOException) {
-        }
-        player.start()
-    }
-    private fun stopAudio(){
-        player.stop()
-        player.release()
     }
 }

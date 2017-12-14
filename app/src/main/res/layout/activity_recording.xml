@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="100dp"
+    android:layout_alignParentBottom="true"
+    xmlns:aw="http://schemas.android.com/apk/res-auto"
+
+    >
+
+    <org.firezenk.audiowaves.Visualizer
+        android:id="@+id/waveSound"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        aw:aw_format="vertical_lines"
+        aw:aw_gravity="center"
+        aw:aw_width="100"
+        aw:aw_height="200"
+        aw:aw_num_waves="10"
+        aw:aw_line_with="30"
+        aw:aw_line_min_with="30"
+        aw:aw_line_height="30"
+        aw:aw_line_min_height="30"
+        aw:aw_line_spacing="10"
+        aw:aw_line_border_radius="50"
+        aw:aw_ball_diameter="30"
+        aw:aw_color_uniform="@color/colorFacebook"
+        aw:aw_color_is_gradient="true"
+        aw:aw_color_gradient_start="@color/colorFacebook"
+        aw:aw_color_gradient_end="@color/colorPrimaryDark" />
+
+</RelativeLayout>
