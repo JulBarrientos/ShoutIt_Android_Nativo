@@ -13,4 +13,7 @@
 
     <string name="facebook_app_id">119746705377217</string>
     <string name="fb_login_protocol_scheme">fb119746705377217</string>
+    <string name="user">User</string>
+    <string name="password">Password</string>
+    <string name="sign_in">Sign In</string>
 </resources>

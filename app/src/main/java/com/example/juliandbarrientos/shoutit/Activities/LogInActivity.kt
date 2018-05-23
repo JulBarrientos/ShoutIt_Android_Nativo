@@ -20,6 +20,7 @@ import com.google.android.gms.tasks.Task
 import com.facebook.login.LoginManager
 import com.facebook.login.LoginResult
 import com.google.firebase.auth.*
+import kotlinx.android.synthetic.main.activity_log_in.*
 
 import java.util.*
 
@@ -97,7 +98,7 @@ class LogInActivity : AppCompatActivity(), View.OnClickListener, GoogleApiClient
 
 
     public override fun onStart() {
-        super.onStart()
+        super.onStart();
         // Check if user is signed in (non-null) and update UI accordingly.
         val currentUser = mAuth!!.getCurrentUser()
         if(currentUser != null){
@@ -147,6 +148,10 @@ class LogInActivity : AppCompatActivity(), View.OnClickListener, GoogleApiClient
                 LoginManager.getInstance().logInWithReadPermissions(this@LogInActivity,  Arrays.asList("public_profile"))
 
         // ---------------------- Default case --------------------------------------------------------------------------//
+            this.email_signin.id -> {
+                val intent = Intent(this, SignInActivity::class.java)
+                startActivity(intent)
+            }
             else                     ->
                 print("x is neither 1 nor 2")
         }
