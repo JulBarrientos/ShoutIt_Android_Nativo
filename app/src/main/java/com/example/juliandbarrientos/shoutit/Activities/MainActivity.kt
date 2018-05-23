@@ -228,7 +228,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         when(v!!.id) {
             fab.id ->{
 
-                manejoAudio.startRecording()
+                this.manejoAudio.startRecording()
                // showDialog(manejoAudio.titleDialog,manejoAudio.messageDialog)
             }
         }

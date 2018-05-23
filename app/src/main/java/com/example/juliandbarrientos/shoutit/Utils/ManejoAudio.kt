@@ -3,6 +3,7 @@ package com.example.juliandbarrientos.shoutit.Utils
 import android.app.Activity
 import android.content.ContentValues.TAG
 import android.content.Context
+import android.media.AudioManager
 import android.media.MediaPlayer
 import android.media.MediaRecorder
 import android.net.Uri
@@ -64,9 +65,11 @@ class ManejoAudio (user: FirebaseUser, mStorageRef: StorageReference, audiDBRef:
         fun init(context : Activity){
             this.context = context
             recorder = MediaRecorder()
+
             recorder.setAudioSource(MediaRecorder.AudioSource.MIC)
             recorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP)
             recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB)
+
             path = File (Environment.getExternalStorageDirectory().path)
         }
         fun startRecording(){
