@@ -19,6 +19,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.tasks.Task
 import com.facebook.login.LoginManager
 import com.facebook.login.LoginResult
+import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.auth.*
 import kotlinx.android.synthetic.main.activity_log_in.*
 
@@ -151,6 +152,31 @@ class LogInActivity : AppCompatActivity(), View.OnClickListener, GoogleApiClient
             this.email_signin.id -> {
                 val intent = Intent(this, SignInActivity::class.java)
                 startActivity(intent)
+            }
+            this.log_in.id -> {
+                mAuth!!.signInWithEmailAndPassword(input_email.text.toString(), input_pass.text.toString())
+                        .addOnCompleteListener(this, object : OnCompleteListener<AuthResult> {
+                            override fun onComplete(task: Task<AuthResult>) {
+                                // Log.d(FragmentActivity.TAG, "createUserWithEmail:onComplete:" + task.isSuccessful())
+
+                                // If sign in fails, display a message to the user. If sign in succeeds
+                                // the auth state listener will be notified and logic to handle the
+                                // signed in user can be handled in the listener.
+                                if (!task.isSuccessful()) {
+                                    Toast.makeText(this@LogInActivity, "La cagaste",
+                                            Toast.LENGTH_SHORT).show()
+                                }
+                                if (task.isSuccessful()) {
+                                    Toast.makeText(this@LogInActivity, "Exito",
+                                            Toast.LENGTH_SHORT).show()
+                                    var intent = Intent(this@LogInActivity, MainActivity::class.java)
+                                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                                    startActivity(intent)
+                                }
+
+                                // ...
+                            }
+                        })
             }
             else                     ->
                 print("x is neither 1 nor 2")

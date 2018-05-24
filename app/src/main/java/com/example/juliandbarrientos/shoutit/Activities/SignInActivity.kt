@@ -57,6 +57,7 @@ class SignInActivity : AppCompatActivity(), View.OnClickListener {
     override fun onStart() {
         super.onStart()
         mAuth!!.addAuthStateListener { mAuthListener }
+
     }
 
     override fun onStop(){
