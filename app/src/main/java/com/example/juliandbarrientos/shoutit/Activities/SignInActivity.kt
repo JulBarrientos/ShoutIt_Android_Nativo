@@ -45,6 +45,7 @@ class SignInActivity : AppCompatActivity(), View.OnClickListener {
                         if (task.isSuccessful()) {
                             Toast.makeText(this@SignInActivity, "Cuenta creada",
                                     Toast.LENGTH_SHORT).show()
+                            this@SignInActivity.finish()
                         }
 
                         // ...
